@@ -1,13 +1,16 @@
+@import-normalize; /* bring in normalize.css styles */
+
+/* rest of app styles */
+/* 之後可以把整個版面撐滿，然後再把顯示天氣的區域放在畫面的正中央 */
+html,
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root {
+    height: 100%;
+    width: 100%;
 }

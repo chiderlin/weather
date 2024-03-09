@@ -134,6 +134,9 @@ const WeatherApp = () => {
                             ? time.dataTime
                             : time.startTime;
                         const elementValue = time.elementValue[0].value;
+                        if (wea.elementName === 'Wx') {
+                            wea.weatherCode = time.elementValue[1].value;
+                        }
                         wea.datetime = datetime;
                         wea.elementValue = elementValue;
                         return wea;
@@ -146,6 +149,8 @@ const WeatherApp = () => {
                     locationName: locationsName,
                     description: weaEle.find((ele) => ele.elementName === 'Wx')
                         .elementValue,
+                    weatherCode: weaEle.find((ele) => ele.elementName === 'Wx')
+                        .weatherCode,
                     temperature: weaEle.find((ele) => ele.elementName === 'T')
                         .elementValue,
                     windSpeed: weaEle.find((ele) => ele.elementName === 'WS')
@@ -200,7 +205,10 @@ const WeatherApp = () => {
 
                         <Celsius>°C</Celsius>
                     </Temperature>
-                    <WeatherIcon />
+                    <WeatherIcon
+                        currentWeatherCode={currentWeather.weatherCode}
+                        moment="night"
+                    />
                 </CurrentWeather>
                 <AirFlow>
                     <AirFlowIcon />

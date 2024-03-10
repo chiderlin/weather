@@ -101,6 +101,20 @@ const Redo = styled.div`
 `;
 
 const WeatherApp = () => {
+    const fetchSunRiseAndSet = () => {
+        const startDate = formatDate(new Date());
+        const endDate = formatDate(new Date(), 8);
+        console.log('startDate', startDate, 'endDate', endDate);
+        const URL = `${DOMAIN}/v1/rest/datastore/A-B0062-001?Authorization=${TOKEN}&limit=10&offset=0&format=JSON&CountyName=臺北市&parameter=SunRiseTime,SunSetTime&timeFrom=${startDate}&timeTo=${endDate}&sort=Date`;
+        fetch(URL)
+            .then((response) => response.json())
+            .then((data) => {
+                // TODO: SunRiseTime, SunSetTime
+                console.log('data2', data);
+            });
+    };
+    fetchSunRiseAndSet();
+
     // [useState]STEP2 定義會使用到的資料狀態
     const [currentWeather, setCurrentWeather] = useState({
         observationTime: '2024-01-01 12:00:00',

@@ -114,7 +114,7 @@ const WeatherApp = () => {
     // ---- old ------
     // [fetchAPI]STEP1: 抓取API
     const fetchCurrentWeather = () => {
-        const TOKEN = 'CWA-76B05553-F747-4EB7-8259-929D16B35F2A';
+        const TOKEN = process.env.TOKEN;
         const URL = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-061?Authorization=${TOKEN}&limit=1&offset=0`;
         fetch(URL)
             .then((response) => response.json())

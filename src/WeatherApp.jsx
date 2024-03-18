@@ -1,11 +1,12 @@
 // useCallback用來
-import React, { useState, useEffect, useCallback } from 'react'; // [useState]STEP 1.載入useState
+import React, { useState, useEffect, useCallback, useMemo } from 'react'; // [useState]STEP 1.載入useState
 import styled from 'styled-components';
 import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as AirFlowIcon } from './images/airFlow.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import WeatherIcon from './WeatherIcon.jsx';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 const Container = styled.div`
   background-color: #ededed;
@@ -110,17 +111,39 @@ const formatDate = (rawdate, addDate = 0) => {
   return `${year}-${month}-${date}`;
 };
 
+const getMoment = (timeList, startDate, endDate) => {
+  const unix_s = dayjs(startDate).valueOf();
+  const unix_e = dayjs(endDate).valueOf();
+  const currentDayObj = timeList.find((time) => {
+    const unix_currentDay = dayjs(time.Date).valueOf();
+    return unix_s <= unix_currentDay <= unix_e;
+  });
+  // console.log(currentDayObj);
+  const nowTimestamp = dayjs().valueOf();
+  const sunriseTimestamp = dayjs(
+    `${startDate} ${currentDayObj.SunRiseTime}`
+  ).valueOf();
+  const sunsetTimestamp = dayjs(
+    `${startDate} ${currentDayObj.SunSetTime}`
+  ).valueOf();
+
+  return sunriseTimestamp <= nowTimestamp <= sunsetTimestamp ? 'day' : 'night';
+};
+
+const fetchSunRiseAndSet = async () => {
+  const startDate = dayjs().format('YYYY-MM-DD');
+  const endDate = dayjs().add(1, 'day').format('YYYY-MM-DD');
+  // console.log('startDate', startDate, 'endDate', endDate);
+  const URL = `${DOMAIN}/api/v1/rest/datastore/A-B0062-001?Authorization=${TOKEN}&format=JSON&CountyName=臺北市&parameter=SunRiseTime,SunSetTime&timeFrom=${startDate}&timeTo=${endDate}`;
+  const data = (await axios.request({ method: 'GET', url: URL })).data;
+  const timeList = data.records.locations.location[0].time;
+  const dayOrnight = getMoment(timeList, startDate, endDate);
+  console.log('dayOrnight', dayOrnight);
+  return dayOrnight;
+};
+
 const WeatherApp = () => {
-  const fetchSunRiseAndSet = async () => {
-    const startDate = formatDate(new Date());
-    const endDate = formatDate(new Date(), 8);
-    console.log('startDate', startDate, 'endDate', endDate);
-    const URL = `${DOMAIN}/api/v1/rest/datastore/A-B0062-001?Authorization=${TOKEN}&format=JSON&CountyName=臺北市&parameter=SunRiseTime,SunSetTime&timeFrom=${startDate}&timeTo=${endDate}`;
-    const data = (await axios.request({ method: 'GET', url: URL })).data;
-    // TODO
-    console.log(data);
-  };
-  fetchSunRiseAndSet();
+  const moment = useMemo(() => fetchSunRiseAndSet(), []);
 
   // [useState]STEP2 定義會使用到的資料狀態
   const [currentWeather, setCurrentWeather] = useState({
@@ -130,6 +153,7 @@ const WeatherApp = () => {
     temperature: 27,
     windSpeed: 0.3,
     humid: 0.88,
+    weatherCode: 1,
   });
 
   // ---- old ------
@@ -213,7 +237,7 @@ const WeatherApp = () => {
           </Temperature>
           <WeatherIcon
             currentWeatherCode={currentWeather.weatherCode}
-            moment="night"
+            moment={moment || 'day'}
           />
         </CurrentWeather>
         <AirFlow>

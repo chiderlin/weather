@@ -138,12 +138,16 @@ const fetchSunRiseAndSet = async () => {
   const data = (await axios.request({ method: 'GET', url: URL })).data;
   const timeList = data.records.locations.location[0].time;
   const dayOrnight = getMoment(timeList, startDate, endDate);
-  console.log('dayOrnight', dayOrnight);
+  // console.log('dayOrnight', dayOrnight);
   return dayOrnight;
 };
 
 const WeatherApp = () => {
-  const moment = useMemo(() => fetchSunRiseAndSet(), []);
+  let moment;
+  useMemo(() => fetchSunRiseAndSet(), []).then((m) => {
+    // console.log('mommm', m);
+    moment = m;
+  });
 
   // [useState]STEP2 定義會使用到的資料狀態
   const [currentWeather, setCurrentWeather] = useState({

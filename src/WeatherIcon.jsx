@@ -95,8 +95,8 @@ const weatherIcons = {
 };
 
 const WeatherIcon = ({ currentWeatherCode, moment }) => {
+  // console.log('moment', moment);
   const [currentWeatherIcon, setCurrentWeatherIcon] = useState('isClear');
-  console.log('moment', moment);
   useEffect(() => {
     // 使用迴圈找出該天氣代碼對應到的天氣型態
     const weatherCode2Type = (weatherCode) => {

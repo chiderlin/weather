@@ -126,8 +126,12 @@ const getMoment = (timeList, startDate, endDate) => {
   const sunsetTimestamp = dayjs(
     `${startDate} ${currentDayObj.SunSetTime}`
   ).valueOf();
-
-  return sunriseTimestamp <= nowTimestamp <= sunsetTimestamp ? 'day' : 'night';
+  // console.log('sunriseTimestamp', sunriseTimestamp);
+  // console.log('nowTimestamp', nowTimestamp);
+  // console.log('sunsetTimestamp', sunsetTimestamp);
+  if (sunriseTimestamp <= nowTimestamp && nowTimestamp <= sunsetTimestamp)
+    return 'day';
+  return 'night';
 };
 
 const fetchSunRiseAndSet = async () => {
@@ -136,6 +140,7 @@ const fetchSunRiseAndSet = async () => {
   // console.log('startDate', startDate, 'endDate', endDate);
   const URL = `${DOMAIN}/api/v1/rest/datastore/A-B0062-001?Authorization=${TOKEN}&format=JSON&CountyName=臺北市&parameter=SunRiseTime,SunSetTime&timeFrom=${startDate}&timeTo=${endDate}`;
   const data = (await axios.request({ method: 'GET', url: URL })).data;
+  // console.log(data);
   const timeList = data.records.locations.location[0].time;
   const dayOrnight = getMoment(timeList, startDate, endDate);
   // console.log('dayOrnight', dayOrnight);

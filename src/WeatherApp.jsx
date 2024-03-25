@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as AirFlowIcon } from './images/airFlow.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
+import { ReactComponent as LoadingIcon } from './images/loading.svg';
 import WeatherIcon from './WeatherIcon.jsx';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -99,6 +100,17 @@ const Redo = styled.div`
     width: 15px;
     height: 15px;
     cursor: pointer; // 滑鼠指標變成手指
+    // 使用rotate動畫效果在svg圖示上
+    animation: rotate infinite 1.5s linear;
+    animation-duration: ${({ isLoading }) => (isLoading ? '1.5s' : '0s')};
+  }
+  @keyframes rotate {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
   }
 `;
 const TOKEN = process.env.REACT_APP_TOKEN;
@@ -163,6 +175,7 @@ const WeatherApp = () => {
     windSpeed: 0.3,
     humid: 0.88,
     weatherCode: 1,
+    isLoading: true,
   });
 
   // ---- old ------
@@ -197,6 +210,7 @@ const WeatherApp = () => {
       temperature: weaEle.find((ele) => ele.elementName === 'T').elementValue,
       windSpeed: weaEle.find((ele) => ele.elementName === 'WS').elementValue,
       humid: weaEle.find((ele) => ele.elementName === 'RH').elementValue,
+      isLoading: false,
     });
   };
   // ---- old ------
@@ -210,6 +224,10 @@ const WeatherApp = () => {
    */
 
   const fetchData = useCallback(() => {
+    setCurrentWeather((prevState) => ({
+      ...prevState,
+      isLoading: true,
+    }));
     fetchCurrentWeather();
   }, []); // -> []改變才會產生新的fetchData
 
@@ -224,6 +242,7 @@ const WeatherApp = () => {
   // [useState]STEP3 將資料帶到JSX中
   return (
     <Container>
+      {/* {console.log('render, isLoading: ', currentWeather.isLoading)} */}
       <WeatherCard>
         <Location>{currentWeather.locationName}</Location>
         {/* <District>{currentWeather.district}</District> */}
@@ -258,13 +277,14 @@ const WeatherApp = () => {
           {currentWeather.humid}%
         </Rain>
         {/* [fetchAPI]STEP2: 綁定onclick時呼叫handleClick */}
-        <Redo onClick={fetchCurrentWeather}>
+        <Redo onClick={fetchData} isLoading={currentWeather.isLoading}>
           最後觀測時間：
           {new Intl.DateTimeFormat('zh-TW', {
             hour: 'numeric',
             minute: 'numeric',
           }).format(new Date(currentWeather.observationTime))}
-          <RefreshIcon />
+          {/* 當 isLoading 的時候顯示 LoadingIcon 否則顯示 RefreshIcon */}
+          {currentWeather.isLoading ? <LoadingIcon /> : <RefreshIcon />}
         </Redo>
       </WeatherCard>
     </Container>

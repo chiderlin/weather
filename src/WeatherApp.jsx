@@ -162,7 +162,6 @@ const fetchSunRiseAndSet = async () => {
 const WeatherApp = () => {
   let moment;
   useMemo(() => fetchSunRiseAndSet(), []).then((m) => {
-    // console.log('mommm', m);
     moment = m;
   });
 
@@ -177,6 +176,17 @@ const WeatherApp = () => {
     weatherCode: 1,
     isLoading: true,
   });
+
+  const {
+    observationTime,
+    locationName,
+    description,
+    temperature,
+    windSpeed,
+    humid,
+    weatherCode,
+    isLoading,
+  } = currentWeather;
 
   // ---- old ------
   // [fetchAPI]STEP1: 抓取API
@@ -244,47 +254,38 @@ const WeatherApp = () => {
     <Container>
       {/* {console.log('render, isLoading: ', currentWeather.isLoading)} */}
       <WeatherCard>
-        <Location>{currentWeather.locationName}</Location>
-        {/* <District>{currentWeather.district}</District> */}
-        <Description>
-          {/* {currentWeather.observationTime}  */}
-          {/*   優化時間格式 */}
-          {/* {new Intl.DateTimeFormat("zh-TW", {
-            hour: "numeric",
-            minute: "numeric",
-          }).format(new Date(currentWeather.observationTime))} */}
-          {currentWeather.description}
-        </Description>
+        <Location>{locationName}</Location>
+        <Description>{description}</Description>
         <CurrentWeather>
           <Temperature>
             {/* {currentWeather.temperature} */}
             {/* 優化溫度格式 */}
-            {Math.round(currentWeather.temperature)}
+            {Math.round(temperature)}
 
             <Celsius>°C</Celsius>
           </Temperature>
           <WeatherIcon
-            currentWeatherCode={currentWeather.weatherCode}
+            currentWeatherCode={weatherCode}
             moment={moment || 'day'}
           />
         </CurrentWeather>
         <AirFlow>
           <AirFlowIcon />
-          {currentWeather.windSpeed} m/h
+          {windSpeed} m/h
         </AirFlow>
         <Rain>
           <RainIcon />
-          {currentWeather.humid}%
+          {humid}%
         </Rain>
         {/* [fetchAPI]STEP2: 綁定onclick時呼叫handleClick */}
-        <Redo onClick={fetchData} isLoading={currentWeather.isLoading}>
+        <Redo onClick={fetchData} isLoading={isLoading}>
           最後觀測時間：
           {new Intl.DateTimeFormat('zh-TW', {
             hour: 'numeric',
             minute: 'numeric',
-          }).format(new Date(currentWeather.observationTime))}
+          }).format(new Date(observationTime))}
           {/* 當 isLoading 的時候顯示 LoadingIcon 否則顯示 RefreshIcon */}
-          {currentWeather.isLoading ? <LoadingIcon /> : <RefreshIcon />}
+          {isLoading ? <LoadingIcon /> : <RefreshIcon />}
         </Redo>
       </WeatherCard>
     </Container>

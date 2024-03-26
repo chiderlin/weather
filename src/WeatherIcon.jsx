@@ -52,7 +52,6 @@ const App = () => (
 // const Cloudy = styled(CloudyIcon)`
 //   flex-basis: auto;
 // `;
-// ------- old -------
 
 const IconContainer = styled.div`
   flex-basis: auto;

@@ -1,5 +1,5 @@
 // useCallback用來
-import React, { useMemo } from 'react'; // [useState]STEP 1.載入useState
+import React, { useMemo, useState } from 'react'; // [useState]STEP 1.載入useState
 import styled from 'styled-components';
 import WeatherCard from './WeatherCard.jsx';
 import dayjs from 'dayjs';
@@ -54,6 +54,9 @@ const getMoment = (timeList, startDate, endDate) => {
 };
 
 const WeatherApp = () => {
+  // define currentPage state, default sets WeatherCard
+  const [currentPage, setCurrentPage] = useState('WeatherCard');
+
   const [currentWeather, fetchData] = useWeatherApi();
   let moment;
   useMemo(() => fetchSunRiseAndSet(), []).then((m) => {
@@ -63,13 +66,18 @@ const WeatherApp = () => {
   // [useState]STEP3 將資料帶到JSX中
   return (
     <Container>
-      {/* {console.log('render, isLoading: ', currentWeather.isLoading)} */}
-      <WeatherCard
-        currentWeather={currentWeather}
-        moment={moment}
-        fetchData={fetchData}
-      />
-      <WeatherSetting />
+      {currentPage === 'WeatherCard' && (
+        <WeatherCard
+          currentWeather={currentWeather}
+          moment={moment}
+          fetchData={fetchData}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
+
+      {currentPage === 'WeatherSetting' && (
+        <WeatherSetting setCurrentPage={setCurrentPage} />
+      )}
     </Container>
   );
 };

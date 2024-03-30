@@ -1,10 +1,11 @@
 // useCallback用來
-import React, { useState, useEffect, useCallback, useMemo } from 'react'; // [useState]STEP 1.載入useState
+import React, { useMemo } from 'react'; // [useState]STEP 1.載入useState
 import styled from 'styled-components';
 import WeatherCard from './WeatherCard.jsx';
 import dayjs from 'dayjs';
 import useWeatherApi from './useWeatherApi.jsx';
 import axios from 'axios';
+import WeatherSetting from './WeatherSetting.jsx';
 
 const Container = styled.div`
   background-color: #ededed;
@@ -68,6 +69,7 @@ const WeatherApp = () => {
         moment={moment}
         fetchData={fetchData}
       />
+      <WeatherSetting />
     </Container>
   );
 };

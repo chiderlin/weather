@@ -5,6 +5,29 @@ import { useState, useEffect, useCallback } from 'react';
 const TOKEN = process.env.REACT_APP_TOKEN;
 const DOMAIN = process.env.REACT_APP_DOMAIN;
 
+export async function fetchCityWeather(cityCode = '063') {
+  const URL = `${DOMAIN}/api/v1/rest/datastore/F-D0047-${cityCode}?Authorization=${TOKEN}&limit=1&offset=0`;
+  const data = (await axios.request({ method: 'GET', url: URL })).data;
+  // console.log('data', data);
+  const locationData = data.records.locations[0];
+  const locationsName = locationData.locationsName;
+  const loca = locationData.location[0];
+  const weaEle = loca.weatherElement.filter((wea) => {
+    if (['Wx', 'PoP6h', 'CI', 'WS', 'T', 'RH'].includes(wea.elementName)) {
+      const time = wea.time[0];
+      const datetime = time.dataTime ? time.dataTime : time.startTime;
+      const elementValue = time.elementValue[0].value;
+      if (wea.elementName === 'Wx') {
+        wea.weatherCode = time.elementValue[1].value;
+      }
+      wea.datetime = datetime;
+      wea.elementValue = elementValue;
+      return wea;
+    }
+  });
+  return { weaEle, locationsName };
+}
+
 const useWeatherApi = () => {
   const [currentWeather, setCurrentWeather] = useState({
     observationTime: '2024-01-01 12:00:00',
@@ -17,26 +40,8 @@ const useWeatherApi = () => {
     isLoading: true,
   });
 
-  const fetchCurrentWeather = async () => {
-    const URL = `${DOMAIN}/api/v1/rest/datastore/F-D0047-061?Authorization=${TOKEN}&limit=1&offset=0`;
-    const data = (await axios.request({ method: 'GET', url: URL })).data;
-    // console.log('data', data);
-    const locationData = data.records.locations[0];
-    const locationsName = locationData.locationsName;
-    const loca = locationData.location[0];
-    const weaEle = loca.weatherElement.filter((wea) => {
-      if (['Wx', 'PoP6h', 'CI', 'WS', 'T', 'RH'].includes(wea.elementName)) {
-        const time = wea.time[0];
-        const datetime = time.dataTime ? time.dataTime : time.startTime;
-        const elementValue = time.elementValue[0].value;
-        if (wea.elementName === 'Wx') {
-          wea.weatherCode = time.elementValue[1].value;
-        }
-        wea.datetime = datetime;
-        wea.elementValue = elementValue;
-        return wea;
-      }
-    });
+  const fetchCurrentWeather = async (cityCode) => {
+    const { weaEle, locationsName } = await fetchCityWeather(cityCode);
     //console.log(weaEle);
 
     setCurrentWeather({

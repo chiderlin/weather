@@ -55,7 +55,7 @@ const getMoment = (timeList, startDate, endDate) => {
 
 const WeatherApp = () => {
   // define currentPage state, default sets WeatherCard
-  const [currentPage, setCurrentPage] = useState('WeatherCard');
+  const [currentPage, setCurrentPage] = useState('WeatherSetting'); // WeatherCard // WeatherSetting
 
   const [currentWeather, fetchData] = useWeatherApi();
   let moment;

@@ -1,5 +1,7 @@
 import React from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
+import { fetchCityWeather } from './useWeatherApi.jsx';
 
 const locations = {
   宜蘭縣: '003',
@@ -111,11 +113,47 @@ const Save = styled.button`
 
 const WeatherSetting = (props) => {
   const { setCurrentPage } = props;
+
+  // STEP1: 定義locationName, default 為 空值
+  const [locationName, setLocationName] = useState('臺北市');
+
+  // STEP3: 定義handleChange要做的事情
+  const handleChange = (e) => {
+    console.log(e.target.value);
+
+    // STEP4: 把使用者輸入內容更新到React內
+    setLocationName(e.target.value);
+  };
+
+  // 1. 定義function
+  const handleSave = () => {
+    // 2. 判斷地區是否出現在array中
+    const locationsArray = Object.keys(locations);
+    if (locationsArray.includes(locationName)) {
+      console.log(`儲存的地區資訊為：${locationName}`);
+      const cityCode = locations[locationName];
+      fetchCityWeather(cityCode).then((res) => {
+        setCurrentPage('WeatherCard');
+      });
+    } else {
+      // 4. 不包含，顯示錯誤資訊
+      alert(`儲存失敗：您輸入的${locationName}並非有效地區`);
+      return;
+    }
+  };
+
   return (
     <WeatherSettingWrapper>
       <Title>設定</Title>
       <StyledLabel htmlFor="location">地區</StyledLabel>
-      <StyledInputList list="location-list" id="location" name="location" />
+      {/* STEP2: 使用onChange事件來監聽使用者輸入資料 */}
+      <StyledInputList
+        list="location-list"
+        id="location"
+        name="location"
+        onChange={handleChange}
+        value={locationName}
+      />
       <datalist id="location-list">
         {/* 定義datalist中的options */}
         {Object.keys(locations).map((location) => (
@@ -124,7 +162,7 @@ const WeatherSetting = (props) => {
       </datalist>
       <ButtonGroup>
         <Back onClick={() => setCurrentPage('WeatherCard')}>返回</Back>
-        <Save>儲存</Save>
+        <Save onClick={handleSave}>儲存</Save>
       </ButtonGroup>
     </WeatherSettingWrapper>
   );
